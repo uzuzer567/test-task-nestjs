@@ -1,11 +1,12 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { SlotDto } from '../dto/slot.dto';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class ParkingService {
     private parking: SlotDto[] = [];
-    constructor() {
-        const parkingSize = 5;
+    constructor(private configService: ConfigService) {
+        const parkingSize = this.configService.get('PARKING_SIZE');
         for (let index = 0; index < parkingSize; index++) {
             const slot = {
                 id: index,
