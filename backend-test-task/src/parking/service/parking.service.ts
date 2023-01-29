@@ -63,4 +63,15 @@ export class ParkingService {
         }
         return vacatedSlot;
     }
+
+    getSlotInfo(slotId: number): SlotDto {
+        let slotDetails = this.parking.filter((slot) => {
+            return slot.id == slotId;
+        });
+
+        if (slotDetails.length <= 0) {
+            throw new HttpException('Slot with such ID does not exist!', HttpStatus.BAD_REQUEST);
+        }
+        return slotDetails[0];
+    }
 }

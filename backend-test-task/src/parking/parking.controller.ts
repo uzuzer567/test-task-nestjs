@@ -1,4 +1,4 @@
-import { Controller, Post, Body, ValidationPipe, HttpException, Delete, Param } from '@nestjs/common';
+import { Controller, Post, Body, ValidationPipe, HttpException, Delete, Param, Get } from '@nestjs/common';
 import { ParkingService } from './service/parking.service';
 
 @Controller('parking')
@@ -28,6 +28,21 @@ export class ParkingController {
                 status: true,
                 data: car,
                 message: 'Parking slot vacated.'
+            }
+            return response;
+        } catch (error) {
+            throw new HttpException({ status: false, message: error.response }, error.status);
+        }
+    }
+
+    @Get('/slot/:slotId')
+    getSlotInfo(@Param('slotId') slotId: number): object {
+        try {
+            let slotInfo = this.parkingService.getSlotInfo(slotId);
+            let response = {
+                status: true,
+                data: slotInfo,
+                message: 'Details of given slot.'
             }
             return response;
         } catch (error) {
