@@ -12,8 +12,7 @@ npm run start:dev
 
 ## Open swagger
 
-npm run start:dev
-Open http://localhost:3000/swagger#/
+npm run start:dev and open http://localhost:3000/swagger#/
 
 ---
 
