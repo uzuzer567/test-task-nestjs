@@ -6,8 +6,11 @@ import {
     HttpException,
     Delete,
     Param,
-    Get
+    Get,
+    UseGuards,
+    Request
 } from '@nestjs/common';
+import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
 import { Car } from './model/car';
 import { ParkingService } from './service/parking.service';
 
@@ -15,10 +18,11 @@ import { ParkingService } from './service/parking.service';
 export class ParkingController {
     constructor(private parkingService: ParkingService) { }
 
+    @UseGuards(JwtAuthGuard)
     @Post('/park')
-    parkCar(@Body(new ValidationPipe()) car: Car): object {
+    parkCar(@Request() request): object {
         try {
-            let selectedSlot = this.parkingService.parkCar(car);
+            let selectedSlot = this.parkingService.parkCar(request.car);
             let response = {
                 status: true,
                 data: selectedSlot,
@@ -30,6 +34,7 @@ export class ParkingController {
         }
     }
 
+    @UseGuards(JwtAuthGuard)
     @Delete('/unpark/:carLicensePlate')
     unparkCar(@Param('carLicensePlate') carLicensePlate: string): object {
         try {
@@ -45,6 +50,7 @@ export class ParkingController {
         }
     }
 
+    @UseGuards(JwtAuthGuard)
     @Get('/slot/:slotId')
     getSlotInfo(@Param('slotId') slotId: number): object {
         try {
