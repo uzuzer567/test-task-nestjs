@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Slot } from '../model/slot';
-import { Car } from '../model/car';
+import { CarDto } from '../model/car.dto';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()
@@ -26,11 +26,11 @@ export class ParkingRepository {
         this.parkingSlots = parking;
     }
 
-    findCar(car: Car): Slot | undefined {
+    findCar(car: CarDto): Slot | undefined {
         return this.parking.find((slot: Slot) => slot?.carLicensePlate === car.licensePlate);
     }
 
-    async parkCar(car: Car): Promise<Slot | null> {
+    async parkCar(car: CarDto): Promise<Slot | null> {
         let selectedSlot: Slot = null;
         this.parking = this.parking.map((slot) => {
             if (slot.isEmpty && !selectedSlot) {

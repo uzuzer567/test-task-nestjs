@@ -3,9 +3,9 @@ import { HttpException, HttpStatus } from '@nestjs/common';
 import { ParkingService } from './service/parking.service';
 import { ParkingController } from './parking.controller';
 import { Slot } from './model/slot';
-import { Car } from './model/car';
+import { CarDto } from './model/car.dto';
 
-const mockCar: Car = {
+const mockCar: CarDto = {
   licensePlate: 'car'
 };
 

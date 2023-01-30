@@ -1,13 +1,13 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { Slot } from '../model/slot';
-import { Car } from '../model/car';
+import { CarDto } from '../model/car.dto';
 import { ParkingRepository } from '../repository/parking.repository';
 
 @Injectable()
 export class ParkingService {
     constructor(private parkingRepository: ParkingRepository) { }
 
-    async parkCar(car: Car) {
+    async parkCar(car: CarDto) {
         const occupiedSlot: Slot = await this.parkingRepository.findCar(car);
 
         if (occupiedSlot) {

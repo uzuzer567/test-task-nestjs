@@ -2,9 +2,9 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigService } from '@nestjs/config';
 import { ParkingRepository } from './parking.repository';
 import { Slot } from '../model/slot';
-import { Car } from '../model/car';
+import { CarDto } from '../model/car.dto';
 
-const mockCar: Car = {
+const mockCar: CarDto = {
     licensePlate: 'car'
   };
 
