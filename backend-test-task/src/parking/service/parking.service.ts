@@ -66,13 +66,11 @@ export class ParkingService {
     }
 
     getSlotInfo(slotId: number): SlotDto {
-        let slotDetails = this.parking.filter((slot) => {
-            return slot.id == slotId;
-        });
+        let slot = this.parking.find(slot => slot.id == slotId);
 
-        if (slotDetails.length <= 0) {
+        if (!slot) {
             throw new HttpException('Slot with such ID does not exist!', HttpStatus.BAD_REQUEST);
         }
-        return slotDetails[0];
+        return slot;
     }
 }

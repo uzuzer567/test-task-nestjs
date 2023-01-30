@@ -1,11 +1,20 @@
-import { Controller, Post, Body, ValidationPipe, HttpException, Delete, Param, Get } from '@nestjs/common';
+import {
+    Controller,
+    Post,
+    Body,
+    ValidationPipe,
+    HttpException,
+    Delete,
+    Param,
+    Get
+} from '@nestjs/common';
 import { ParkingService } from './service/parking.service';
 
 @Controller('parking')
 export class ParkingController {
     constructor(private parkingService: ParkingService) { }
 
-    @Post('/park/:carLicensePlate')
+    @Post('/park')
     parkCar(@Body(new ValidationPipe()) carLicensePlate: string): object {
         try {
             let selectedSlot = this.parkingService.parkCar(carLicensePlate);
