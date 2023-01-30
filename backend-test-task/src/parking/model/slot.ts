@@ -1,6 +1,6 @@
 import { IsString, IsBoolean, IsNumber, IsNotEmpty } from '@nestjs/class-validator';
 
-export class SlotDto {
+export class Slot {
     @IsNumber()
     @IsNotEmpty()
     id: number;
@@ -11,5 +11,5 @@ export class SlotDto {
 
     @IsString()
     @IsNotEmpty()
-    carLicensePlate: string;
+    carLicensePlate?: string;
 }

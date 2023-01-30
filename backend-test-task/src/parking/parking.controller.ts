@@ -8,6 +8,7 @@ import {
     Param,
     Get
 } from '@nestjs/common';
+import { Car } from './model/car';
 import { ParkingService } from './service/parking.service';
 
 @Controller('parking')
@@ -15,9 +16,9 @@ export class ParkingController {
     constructor(private parkingService: ParkingService) { }
 
     @Post('/park')
-    parkCar(@Body(new ValidationPipe()) carLicensePlate: string): object {
+    parkCar(@Body(new ValidationPipe()) car: Car): object {
         try {
-            let selectedSlot = this.parkingService.parkCar(carLicensePlate);
+            let selectedSlot = this.parkingService.parkCar(car);
             let response = {
                 status: true,
                 data: selectedSlot,

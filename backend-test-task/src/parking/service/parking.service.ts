@@ -1,33 +1,26 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
-import { SlotDto } from '../dto/slot.dto';
-import { ConfigService } from '@nestjs/config';
+import { Slot } from '../model/slot';
+import { Car } from '../model/car';
+import { ParkingRepository } from '../repository/parking.repository';
 
 @Injectable()
 export class ParkingService {
-    private parking: SlotDto[] = [];
-    constructor(private configService: ConfigService) {
-        const parkingSize = this.configService.get('PARKING_SIZE');
-        for (let index = 0; index < parkingSize; index++) {
-            const slot = {
-                id: index,
-                isEmpty: true,
-                carLicensePlate: '',
-            }
-            this.parking.push(slot);
-        }
+    private parking: Slot[];
+    constructor(private parkingRepository: ParkingRepository) {
+        this.parking = this.parkingRepository.parking;
     }
 
-    parkCar(licensePlate: string): SlotDto {
-        let selectedSlot: SlotDto = null;
-        const isCarParked = this.parking.filter((slot) => slot.carLicensePlate == licensePlate);
+    parkCar(car: Car): Slot {
+        let selectedSlot: Slot = null;
+        const isCarParked = this.parking.find((slot: Slot) => slot.carLicensePlate === car.licensePlate);
 
-        if (isCarParked.length > 0) {
+        if (isCarParked) {
             throw new HttpException('Car is already parked!', HttpStatus.CONFLICT);
         }
 
         this.parking = this.parking.map((slot) => {
             if (slot.isEmpty && !selectedSlot) {
-                slot.carLicensePlate = licensePlate;
+                slot.carLicensePlate = car.licensePlate;
                 slot.isEmpty = false;
                 selectedSlot = slot;
             }
@@ -40,15 +33,15 @@ export class ParkingService {
         return selectedSlot;
     }
 
-    unparkCar(licensePlate: string): SlotDto {
+    unparkCar(licensePlate: string): Slot {
         let isCarParked = false;
-        const vacatedSlot: SlotDto = {
+        const vacatedSlot: Slot = {
             carLicensePlate: '',
             isEmpty: true,
             id: null,
         };
 
-        this.parking = this.parking.map((slot) => {
+        this.parking = this.parking.map((slot: Slot) => {
             if (licensePlate == slot.carLicensePlate) {
                 slot.isEmpty = true;
                 vacatedSlot.carLicensePlate = slot.carLicensePlate;
@@ -65,8 +58,8 @@ export class ParkingService {
         return vacatedSlot;
     }
 
-    getSlotInfo(slotId: number): SlotDto {
-        let slot = this.parking.find(slot => slot.id == slotId);
+    getSlotInfo(slotId: number): Slot {
+        let slot = this.parking.find((slot: Slot) => slot.id == slotId);
 
         if (!slot) {
             throw new HttpException('Slot with such ID does not exist!', HttpStatus.BAD_REQUEST);
