@@ -12,4 +12,8 @@ export class Slot {
     @IsString()
     @IsNotEmpty()
     carLicensePlate?: string;
+
+    @IsString()
+    @IsNotEmpty()
+    lastCarLicensePlate?: string;
 }
