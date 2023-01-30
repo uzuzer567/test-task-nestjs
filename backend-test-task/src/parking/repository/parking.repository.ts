@@ -7,7 +7,7 @@ export class ParkingRepository {
     private parkingSlots: Slot[] = [];
     
     constructor(private configService: ConfigService) {
-        const parkingSize = this.configService.get('PARKING_SIZE');
+        const parkingSize = this.configService.get('PARKING_SIZE') || 5;
         for (let index = 0; index < parkingSize; index++) {
             const slot = {
                 id: index,
