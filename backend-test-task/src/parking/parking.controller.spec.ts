@@ -10,20 +10,20 @@ const mockCar: Car = {
 };
 
 const mockSlot: Slot = {
-  id: 0,
+  id: 'slot1',
   isEmpty: false,
   carLicensePlate: 'car'
 };
 
 const mockVacatedSlot: Slot = {
-  id: 0,
+  id: 'slot1',
   isEmpty: true
 };
 
 const mockParkingService = jest.fn().mockReturnValue({
   parkCar: jest.fn((value) => value),
   unparkCar: jest.fn((value) => value),
-  getSlotInfo: jest.fn((value) => value),
+  getSlotDetails: jest.fn((value) => value),
 });
 
 describe('ParkingController', () => {
@@ -56,17 +56,19 @@ describe('ParkingController', () => {
       .mockImplementation(() => Promise.resolve(mockSlot));
     const result = await controller.parkCar(mockCar);
     expect(service.parkCar).toBeCalledTimes(1);
-    expect(result).toBe(mockSlot);
+    expect(result.data.carLicensePlate).toBe(mockCar.licensePlate);
   });
 
   it('should park car not successfully', async() => {
-    const mockStatusConflict = 409;
     jest
       .spyOn(service, 'parkCar')
       .mockRejectedValueOnce(new HttpException('Car is already parked!', HttpStatus.CONFLICT));
-    const result = await controller.parkCar(mockCar);
-    expect(service.parkCar).toBeCalledTimes(1);
-    expect((result as HttpException).getStatus()).toBe(mockStatusConflict);
+    expect(service.parkCar).toBeCalledTimes(0);
+    try {
+      await controller.parkCar(mockCar);
+    } catch (error) {
+      expect(error.message).toBe('Car is already parked!');
+    }
   });
 
   it('should unpark car successfully', async() => {
@@ -75,38 +77,40 @@ describe('ParkingController', () => {
       .mockImplementation(() => Promise.resolve(mockVacatedSlot));
     const result = await controller.unparkCar(mockCar.licensePlate);
     expect(service.unparkCar).toBeCalledTimes(1);
-    expect((result as Slot).isEmpty).toBeTruthy();
+    expect(result.data.isEmpty).toBeTruthy();
   });
 
   it('should unpark car not successfully', async() => {
-    const mockStatusBadRequest = 400;
     jest
       .spyOn(service, 'unparkCar')
       .mockRejectedValueOnce(new HttpException('Car with such license plate is not parked!', HttpStatus.BAD_REQUEST));
-    const result = (await controller.unparkCar(mockCar.licensePlate)) as HttpException;
-    expect(service.unparkCar).toBeCalledTimes(1);
-    expect(result.getStatus()).toBe(mockStatusBadRequest);
+    expect(service.unparkCar).toBeCalledTimes(0);
+    try {
+      await controller.unparkCar(mockCar.licensePlate);
+    } catch (error) {
+      expect(error.message).toBe('Car with such license plate is not parked!');
+    }
   });
 
   it('should get slot info successfully', async() => {
-    const mockSlotId = 0;
     const mockCarLicensePlate = 'car';
     jest
-      .spyOn(service, 'getSlotInfo')
+      .spyOn(service, 'getSlotDetails')
       .mockImplementation(() => Promise.resolve(mockSlot));
-    const result = await controller.getSlotInfo(mockSlotId);
-    expect(service.getSlotInfo).toBeCalledTimes(1);
-    expect((result as Slot).carLicensePlate).toBe(mockCarLicensePlate);
+    const result = await controller.getSlotDetails(mockSlot.id);
+    expect(service.getSlotDetails).toBeCalledTimes(1);
+    expect(result.data.carLicensePlate).toBe(mockCarLicensePlate);
   });
 
   it('should get slot info not successfully', async() => {
-    const mockSlotId = 8;
-    const mockMessage = 'Slot with such ID does not exist!';
     jest
-      .spyOn(service, 'getSlotInfo')
+      .spyOn(service, 'getSlotDetails')
       .mockRejectedValueOnce(new HttpException('Slot with such ID does not exist!', HttpStatus.BAD_REQUEST));
-    const result = (await controller.getSlotInfo(mockSlotId)) as HttpException;
-    expect(service.getSlotInfo).toBeCalledTimes(1);
-    expect((result.getResponse() as any).message).toBe(mockMessage);
+    expect(service.getSlotDetails).toBeCalledTimes(0);
+    try {
+      await controller.getSlotDetails(mockSlot.id);
+    } catch (error) {
+      expect(error.message).toBe('Slot with such ID does not exist!');
+    }
   });
 });

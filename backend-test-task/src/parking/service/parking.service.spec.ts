@@ -10,13 +10,13 @@ const mockCar: Car = {
 };
 
 const mockSlot: Slot = {
-  id: 0,
+  id: 'slot1',
   isEmpty: false,
   carLicensePlate: 'car'
 };
 
 const mockVacatedSlot: Slot = {
-  id: 0,
+  id: 'slot1',
   isEmpty: true,
   lastCarLicensePlate: 'car'
 };
@@ -58,7 +58,7 @@ describe('ParkingService', () => {
       .mockImplementation(() => undefined);
     jest
       .spyOn(repository, 'parkCar')
-      .mockImplementation(() => mockSlot);
+      .mockImplementation(() => Promise.resolve(mockSlot));
     const result = await service.parkCar(mockCar);
     expect(result.carLicensePlate).toBe(mockCar.licensePlate);
   });
@@ -93,7 +93,7 @@ describe('ParkingService', () => {
   it('should unpark car successfully', async() => {
     jest
       .spyOn(repository, 'unparkCar')
-      .mockImplementation(() => mockVacatedSlot);
+      .mockImplementation(() => Promise.resolve(mockVacatedSlot));
     const result = await service.unparkCar(mockCar.licensePlate);
     expect(result.lastCarLicensePlate).toBe(mockCar.licensePlate);
   });
@@ -105,15 +105,15 @@ describe('ParkingService', () => {
     try {
       await service.unparkCar(mockCar.licensePlate);
     } catch (error) {
-      expect(error.message).toBe('Car with such license plate is not parked!');
+      expect(error?.message).toBe('Car with such license plate is not parked!');
     }
   });
 
-  it('should get slot info', async() => {
+  it('should get slot details', async() => {
     jest
       .spyOn(repository, 'findSlot')
-      .mockImplementation(() => mockSlot);
-    const result = await service.getSlotInfo(mockSlot.id);
+      .mockImplementation(() => Promise.resolve(mockSlot));
+    const result = await service.getSlotDetails(mockSlot.id);
     expect(result.isEmpty).toBeFalsy();
   });
 
@@ -123,7 +123,7 @@ describe('ParkingService', () => {
       .mockImplementation(() => undefined);
 
     try {
-      await service.getSlotInfo(mockVacatedSlot.id);
+      await service.getSlotDetails(mockVacatedSlot.id);
     } catch (error) {
       expect(error.message).toBe('Slot with such ID does not exist!');
     }

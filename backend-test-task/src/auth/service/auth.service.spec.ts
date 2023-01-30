@@ -72,6 +72,6 @@ describe('AuthService', () => {
       .spyOn(jwtService, 'sign')
       .mockImplementation(() => mockAccessToken);
     const result = await service.loginWithCredentials(mockUser);
-    expect(result).toBe(mockAccessToken);
+    expect(result.accessToken).toBe(mockAccessToken);
   });
 });

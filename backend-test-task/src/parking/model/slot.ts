@@ -1,9 +1,9 @@
-import { IsString, IsBoolean, IsNumber, IsNotEmpty } from '@nestjs/class-validator';
+import { IsString, IsBoolean, IsNotEmpty } from '@nestjs/class-validator';
 
 export class Slot {
-    @IsNumber()
+    @IsString()
     @IsNotEmpty()
-    id: number;
+    id: string;
 
     @IsBoolean()
     @IsNotEmpty()

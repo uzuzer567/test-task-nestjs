@@ -5,13 +5,13 @@ import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class ParkingRepository {
-    private parkingSlots: Slot[] = [];
+    parkingSlots: Slot[] = [];
     
     constructor(private configService: ConfigService) {
         const parkingSize = this.configService.get('PARKING_SIZE') || 5;
         for (let index = 0; index < parkingSize; index++) {
             const slot = {
-                id: index,
+                id: 'slot' + index,
                 isEmpty: true,
             }
             this.parkingSlots.push(slot);
@@ -26,11 +26,11 @@ export class ParkingRepository {
         this.parkingSlots = parking;
     }
 
-    findCar(car: Car): Slot {
+    findCar(car: Car): Slot | undefined {
         return this.parking.find((slot: Slot) => slot?.carLicensePlate === car.licensePlate);
     }
 
-    parkCar(car: Car): Slot {
+    async parkCar(car: Car): Promise<Slot | null> {
         let selectedSlot: Slot = null;
         this.parking = this.parking.map((slot) => {
             if (slot.isEmpty && !selectedSlot) {
@@ -43,19 +43,18 @@ export class ParkingRepository {
         return selectedSlot;
     }
 
-    unparkCar(licensePlate: string): Slot {
+    async unparkCar(licensePlate: string): Promise<Slot> {
         const vacatedSlot: Slot = {
             lastCarLicensePlate: '',
-            carLicensePlate: '',
             isEmpty: true,
             id: null,
         };
         this.parking = this.parking.map((slot: Slot) => {
-            if (licensePlate == slot.carLicensePlate) {
-                slot.isEmpty = true;
-                slot.lastCarLicensePlate = slot.carLicensePlate;
+            if (licensePlate === slot.carLicensePlate) {
                 vacatedSlot.lastCarLicensePlate = slot.carLicensePlate;
                 vacatedSlot.id = slot.id;
+                slot.isEmpty = true;
+                slot.lastCarLicensePlate = slot.carLicensePlate;
                 delete slot.carLicensePlate;
             }
             return slot;
@@ -63,7 +62,7 @@ export class ParkingRepository {
         return vacatedSlot;
     }
 
-    findSlot(slotId: number): Slot {
-        return this.parking.find((slot: Slot) => slot.id === slotId);
+    async findSlot(id: string): Promise<Slot | undefined> {
+        return this.parking.find((slot: Slot) => slot.id == id);
     }
 }

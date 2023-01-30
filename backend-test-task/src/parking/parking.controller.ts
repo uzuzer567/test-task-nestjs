@@ -6,10 +6,11 @@ import {
     Param,
     Get,
     UseGuards,
-    Request
+    Body
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
 import { ParkingService } from './service/parking.service';
+import { Car } from '../parking/model/car';
 
 @Controller('parking')
 export class ParkingController {
@@ -17,11 +18,19 @@ export class ParkingController {
 
     @UseGuards(JwtAuthGuard)
     @Post('/park')
-    async parkCar(@Request() request) {
+    async parkCar(@Body() car: Car) {
         try {
-            return await this.parkingService.parkCar(request.car);
+            let selectedSlot = await this.parkingService.parkCar(car);
+            if (selectedSlot) {
+                let response = {
+                    status: true,
+                    data: selectedSlot,
+                    message: 'Car is parked.'
+                }
+                return response;
+            }
         } catch (error) {
-            return new HttpException({ status: false, message: error.response }, error.status);
+            throw new HttpException({ status: false, message: error.response }, error.status);
         }
     }
 
@@ -29,19 +38,33 @@ export class ParkingController {
     @Delete('/unpark/:carLicensePlate')
     async unparkCar(@Param('carLicensePlate') carLicensePlate: string) {
         try {
-            return await this.parkingService.unparkCar(carLicensePlate);
+            let vacatedSlot = await this.parkingService.unparkCar(carLicensePlate);
+            if (vacatedSlot) {
+                let response = {
+                    status: true,
+                    data: vacatedSlot,
+                    message: 'Parking slot vacated.'
+                }
+                return response;
+            }
         } catch (error) {
-            return new HttpException({ status: false, message: error.response }, error.status);
+            throw new HttpException({ status: false, message: error.response }, error.status);
         }
     }
 
     @UseGuards(JwtAuthGuard)
-    @Get('/slot/:slotId')
-    async getSlotInfo(@Param('slotId') slotId: number) {
+    @Get('/slot/:id')
+    async getSlotDetails(@Param('id') id: string) {
         try {
-            return await this.parkingService.getSlotInfo(slotId);
+            let slotInfo = await this.parkingService.getSlotDetails(id);
+            var response = {
+                status: true,
+                data: slotInfo,
+                message: "Details of given slot."
+            }
+            return response;
         } catch (error) {
-            return new HttpException({ status: false, message: error.response }, error.status);
+            throw new HttpException({ status: false, message: error.response }, error.status);
         }
     }
 }

@@ -8,12 +8,13 @@ export class ParkingService {
     constructor(private parkingRepository: ParkingRepository) { }
 
     async parkCar(car: Car) {
-        const occupiedSlot: Slot = this.parkingRepository.findCar(car);
+        const occupiedSlot: Slot = await this.parkingRepository.findCar(car);
+
         if (occupiedSlot) {
             throw new HttpException('Car is already parked!', HttpStatus.CONFLICT);
         }
 
-        let selectedSlot: Slot = this.parkingRepository.parkCar(car);
+        let selectedSlot: Slot = await this.parkingRepository.parkCar(car);
         if (!selectedSlot) {
             throw new HttpException('Parking lot is full!', HttpStatus.BAD_REQUEST);
         }
@@ -21,18 +22,19 @@ export class ParkingService {
     }
 
     async unparkCar(licensePlate: string) {
-        const vacatedSlot: Slot = this.parkingRepository.unparkCar(licensePlate);
-        if (!vacatedSlot) {
+        const vacatedSlot: Slot = await this.parkingRepository.unparkCar(licensePlate);
+        if (!vacatedSlot?.id) {
             throw new HttpException('Car with such license plate is not parked!', HttpStatus.BAD_REQUEST);
         }
         return vacatedSlot;
     }
 
-    async getSlotInfo(slotId: number) {
-        let slot: Slot = this.parkingRepository.findSlot(slotId);
-        if (!slot) {
+    async getSlotDetails(id: string) {
+        const slotInfo = await this.parkingRepository.findSlot(id);
+
+        if (!slotInfo) {
             throw new HttpException('Slot with such ID does not exist!', HttpStatus.BAD_REQUEST);
         }
-        return slot;
+        return slotInfo;
     }
 }

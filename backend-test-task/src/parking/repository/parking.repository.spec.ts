@@ -9,7 +9,7 @@ const mockCar: Car = {
   };
 
 const mockSlot: Slot = {
-    id: 0,
+    id: 'slot1',
     isEmpty: false,
     carLicensePlate: 'car'
   };
@@ -46,19 +46,19 @@ describe('ParkingRepository', () => {
     expect(result).toBeFalsy();
   });
 
-  it('should park car', () => {
-    const result = repository.parkCar(mockCar);
+  it('should park car', async() => {
+    const result = await repository.parkCar(mockCar);
     expect(result.carLicensePlate).toBe(mockCar.licensePlate);
   });
 
-  it('should unpark car', () => {
+  it('should unpark car', async() => {
     repository.parkCar(mockCar);
-    const result = repository.unparkCar(mockCar.licensePlate);
+    const result = await repository.unparkCar(mockCar.licensePlate);
     expect(result.lastCarLicensePlate).toBe(mockCar.licensePlate);
   });
 
-  it('should get slot info', () => {
-    const result = repository.findSlot(mockSlot.id);
+  it('should get slot info', async() => {
+    const result = await repository.findSlot(mockSlot.id);
     expect(result.isEmpty).toBeTruthy();
   });
 });
