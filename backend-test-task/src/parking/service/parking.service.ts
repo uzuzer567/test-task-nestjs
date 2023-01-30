@@ -14,7 +14,7 @@ export class ParkingService {
             throw new HttpException('Car is already parked!', HttpStatus.CONFLICT);
         }
 
-        let selectedSlot: Slot = await this.parkingRepository.parkCar(car);
+        const selectedSlot: Slot = await this.parkingRepository.parkCar(car);
         if (!selectedSlot) {
             throw new HttpException('Parking lot is full!', HttpStatus.BAD_REQUEST);
         }
